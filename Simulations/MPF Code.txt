@@ -1,0 +1,441 @@
+ORG 0000H
+JMP MAIN
+
+; ISR
+ORG 0003H
+CLR P3.1 ; Disable interrupt
+CLR EA ; No interrupt will be acknowledged
+CLR EX0 ; Disable external interrupt0
+CALL DETECTION
+SITUATION0: CJNE R0, #000H, SITUATION1 ; Situation 0 = wait for user to push PC
+        PC_CLICK: CJNE R1, #010H, WRONG_CLICK_1 ; Any pushed key will be wrong except PC
+			MOV R0, #001H ; Move to status 1
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+        WRONG_CLICK_1:
+			MOV R0, #000H ; Stay in status 0
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+SITUATION1: CJNE R0, #001H, SITUATION2 ; Situation 1 = wait for user to enter higher part of start address
+        NUMBER_CLICK1: JNB P3.3, WRONG_CLICK2 ; Any pushed will be wrong if it is not a number
+			MOV R0, #002H ; Move to status 2
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+        WRONG_CLICK2:
+			MOV R0, #001H ; Stay in status 1
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION2: CJNE R0, #002H, SITUATION3 ; Situation 2 = wait for user to enter lower part of start address
+        NUMBER_CLICK2: JNB P3.3, WRONG_CLICK3 ; Any pushed will be wrong if it is not a number
+			MOV R0, #003H ; Move to status 3
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK3:
+			MOV R0, #002H ; Stay in status 2
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION3: CJNE R0, #003H, SITUATION4 ; Situation 3 = the address is entered and the user should enter EXE
+		EXE_CLICK1: CJNE R1, #0D0H, WRONG_CLICK4 ; Any pushed key will be wrong except EXE
+			MOV R0, #004H ; Move to status 4
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK4: 
+			MOV R0, #003H ; Stay in status 3
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION4: CJNE R0, #004H, SITUATION5 ; Situation 4 = address is sent to controller and now it is time to enter higher part of data which you want to send to that mempry address
+		NUMBER_CLICK3: JNB P3.3, WRONG_CLICK5 ; Any pushed will be wrong if it is not a number
+			MOV R0, #005H ; Move to status 5
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK5:
+			MOV R0, #004H ; Stay in status 4
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION5: CJNE R0, #005H, SITUATION6 ; Situation 5 = address is sent to controller and now it is time to enter lower part of data which you want to send to that mempry address
+		NUMBER_CLICK4: JNB P3.3, WRONG_CLICK6 ; Any pushed will be wrong if it is not a number
+			MOV R0, #006H ; Move to status 6
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK6:
+			MOV R0, #005H ; Stay in status 5
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION6: CJNE R0, #006H, SITUATION7 ; Situation 6 = data is sent to choosen memory address and user must click on EXE
+		EXE_CLICK2: CJNE R1, #0D0H, WRONG_CLICK7 ; Any pushed key will be wrong except EXE
+			MOV R0, #007H ; Move to status 7
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK7: 
+			MOV R0, #006H ; Stay in status 6
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION7: CJNE R0, #007H, SITUATION8 ; Situation 7 = wait for user to enter higher part of the next address
+		NUMBER_CLICK5: JNB P3.3, UP ; Check the next address if it is not a number
+			MOV R0, #008H ; Move to status 3
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		UP: CJNE R1, #050H, DOWN ;  Check the previous address if it is not next
+			
+			MOV R0, #004H ; Move to status 3
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		DOWN: CJNE R1, #070H, DOWN ;  Other keys are wrong if it is not next
+			
+			MOV R0, #004H ; Move to status 3
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK8:
+			MOV R0, #007H ; Stay in status 7
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+SITUATION8: ; Situation 8 = wait for user to enter lower part of the next address
+		NUMBER_CLICK6: JNB P3.3, WRONG_CLICK8 ; Any pushed will be wrong if it is not a number
+			MOV R0, #003H ; Move to status 3
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI
+		WRONG_CLICK9:
+			MOV R0, #008H ; Stay in status 8
+			SETB EA ; Enable interrupt individually
+			SETB EX0 ; Enable external interrupt0
+			SETB P3.1 ; Enable interrupt
+			RETI 
+RETI
+ 
+ 
+ ; Subroutine for detecting the key
+DETECTION:
+        COLUMN_ONE: JB P2.0, COLUMN_TWO ; If P2.0 is high the key is not from the first column of left key board
+                ; The key is from the first column
+                ZERO:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.0, EIGHT ; If P2.0 is low after setting P3.4 the key is not 0
+                        MOV R1, #000H ; the key is 0
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                EIGHT:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.0, START_PC ; If P2.0 is low after setting P3.5 the key is not 8
+                        MOV R1, #008H ; the key is 8
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                START_PC:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.0, F1 ; If P2.0 is low after setting P3.6 the key is not PC
+                        MOV R1, #010H ; the key is PC
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F1:
+                        MOV R1, #020H ; The key is F1
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_TWO: JB P2.1, COLUMN_THREE ; If P2.1 is high the key is not from the second column of left key board
+                ; The key is from the second column
+                ONE:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.1, NINE ; If P2.1 is low after setting P3.4 the key is not 1
+                        MOV R1, #001H ; the key is 1
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                NINE:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.1, ADR ; If P2.1 is low after setting P3.5 the key is not 9
+                        MOV R1, #009H ; the key is 9
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                ADR:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.1, F2 ; If P2.1 is low after setting P3.6 the key is not ADR
+                        MOV R1, #030H ; the key is ADR
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F2:
+                        MOV R1, #040H ; The key is F1
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_THREE: JB P2.2, COLUMN_FOUR ; If P2.2 is high the key is not from the third column of left key board
+                ; The key is from the third column
+                TWO:
+						CPL P3.4 ; Set the first row of key board
+						JNB P2.2, AA ; If P2.2 is low after setting P3.4 the key is not 2
+                        MOV R1, #002H ; the key is 2
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                AA:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.2, PLUS ; If P2.2 is low after setting P3.5 the key is not A
+                        MOV R1, #00AH ; the key is A
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                PLUS:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.2, F3 ; If P2.2 is low after setting P3.6 the key is not PLUS
+                        MOV R1, #050H ; the key is PLUS
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F3:
+                        MOV R1, #060H ; The key is F3
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_FOUR: JB P2.3, COLUMN_FIVE ; If P2.3 is high the key is not from the fourth column of left key board
+                ; The key is from the fourth column
+                THREE:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.3, BB ; If P2.3 is low after setting P3.4 the key is not 3
+                        MOV R1, #003H ; the key is 3
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                BB:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.3, MINUS ; If P2.3 is low after setting P3.5 the key is not B
+                        MOV R1, #00BH ; the key is B
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                MINUS:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.3, F4 ; If P2.3 is low after setting P3.6 the key is not MINUS
+                        MOV R1, #070H ; the key is MINUS
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F4:
+                        MOV R1, #080H ; The key is F4
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_FIVE: JB P2.4, COLUMN_SIX ; If P2.4 is high the key is not from the first column of right key board
+                ; The key is from the fifth column
+                FOUR:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.4, CC ; If P2.4 is low after setting P3.4 the key is not 4
+                        MOV R1, #004H ; the key is 4
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                CC:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.4, DATAA ; If P2.4 is low after setting P3.5 the key is not C
+                        MOV R1, #00CH ; the key is C
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                DATAA:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.4, F5 ; If P2.4 is low after setting P3.6 the key is not DATA
+                        MOV R1, #090H ; the key is DATA
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F5:
+                        MOV R1, #0A0H ; The key is F5
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_SIX: JB P2.5, COLUMN_SEVEN ; If P2.5 is high the key is not from the second column of right key board
+                ; The key is from the sixth column
+                FIVE:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.5, D ; If P2.5 is low after setting P3.4 the key is not 5
+                        MOV R1, #005H ; the key is 5
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                D:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.5, MODE ; If P2.5 is low after setting P3.5 the key is not D
+                        MOV R1, #00DH ; the key is D
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                MODE:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.5, F6 ; If P2.5 is low after setting P3.6 the key is not MOD
+                        MOV R1, #0B0H ; the key is MOD
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F6:
+                        MOV R1, #0C0H ; The key is F6
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_SEVEN: JB P2.6, COLUMN_EIGHT ; If P2.6 is high the key is not from the third column of right key board
+                ; The key is from the seventh column
+                SIX:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.6, E ; If P2.6 is low after setting P3.4 the key is not 6
+                        MOV R1, #006H ; the key is 6
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                E:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.6, EXE ; If P2.6 is low after setting P3.5 the key is not E
+                        MOV R1, #00EH ; the key is E
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                EXE:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.6, F7 ; If P2.6 is low after setting P3.6 the key is not EXE
+                        MOV R1, #0D0H ; the key is EXE
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F7:
+                        MOV R1, #0E0H ; The key is F1
+                        CLR P3.3 ; The key is not a number
+                        RET
+        COLUMN_EIGHT:
+                ; The key is from the eighths column
+                SEVEN:
+                        CPL P3.4 ; Set the first row of key board
+                        JNB P2.7, F ; If P2.7 is low after setting P3.4 the key is not 7
+                        MOV R1, #007H ; the key is 7
+                        CPL P3.4 ; Clear the first row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                F:
+                        CPL P3.4 ; Clear the first row of key board
+                        CPL P3.5 ; Set the first row of key board
+                        JNB P2.7, FINISH ; If P2.7 is low after setting P3.5 the key is not F
+                        MOV R1, #00FH ; the key is F
+                        CPL P3.5 ; Clear the second row of key boards
+                        SETB P3.3 ; The key is a number
+                        RET
+                FINISH:
+                        CPL P3.5 ; Clear the second row of key board
+                        CPL P3.6 ; Set the third row of key board
+                        JNB P2.7, F8 ; If P2.7 is low after setting P3.6 the key is not END
+                        MOV R1, #0F0H ; the key is END
+                        CPL P3.6 ; Clear the third row of key boards
+                        CLR P3.3 ; The key is not a number
+                        RET
+                F8:
+                        MOV R1, #0F1H ; The key is F8
+                        CLR P3.3 ; The key is not a number
+                        RET
+
+
+
+ORG 04FFH
+MAIN:
+        MOV P3, #00FH ; Clear rows of keyboard
+        CLR IT0 ; Active low interrupt
+        CLR EX1 ; Disable external interrupt 1
+        MOV R0, #000H ; R0 is a status register and 00 is equal to start and waiting for pc
+        MOV R1, #000H ; R1 is a value register whivh we store the value of recent pushed key of key boards in it
+	MOV R2, #000H ; R2 is an address register which contain address of RAM we want to write in it
+	MOV R3, #000H ; R3 is a data register that contain the value we want to write to memory
+        CLR P3.3 ; P3.3 is used as a flag to check wheter the last clicked key was a number or not. if it is one, recenet key was number
+        SETB EA ; Enable interrupt individually
+        SETB EX0 ; Enable external interrupt0
+        STATUS0: CJNE R0, #001H, STATUS0 ; Status 1 will happen only if user push PC button
+        STATUS1: CJNE R0, #002H, STATUS1 ; Stay in Status 1 until user clicks on a number
+	    MOV B, #010H
+	    MOV A, R1
+	    MUL AB ; Multiplying R1 by 16 is equal to shifting R1 4bits leftward 
+	    MOV R2, A ; Shifted value of R1 is placed in address register
+	STATUS2: CJNE R0, #003H, STATUS2 ; Stay in status2 until user clicks a number
+	    MOV A, R1
+	    ADD A, R2 ; Address is complete
+	    MOV R2, A
+	STATUS3: CJNE R0, #004H, STATUS3 ; Stay in status 3 until user push EXE
+	STATUS4: CJNE R0, #005H, STATUS4 ; Stay in status4 until user enter a number
+	    MOV A, R1
+	    MUL AB ;  Multiplying R1 by 16 is equal to shifting R1 4bits leftward 
+	    MOV R3, A ; Shifted value of R1 is placed in data register
+	STATUS5: CJNE R0, #006H, STATUS5 ; Stay in status 5 until user enter a number
+	    MOV A, R1
+	    ADD A, R3 ; Data is complete
+	    MOV R3, A
+	STATUS6: CJNE R0, #007H, STATUS6 ; Stay in status 6 until user click on EXE
+	    MOV A, R2
+	    MOV R0, A
+	    MOV A, R3
+	    MOV @R0, A ; Send the value of data register to memory location pointed by address register
+	    MOV  R0, #007H
+	STATUS7: 
+	    SUB_STATUS_1: CJNE R0, #008H, SUB_STATUS_2
+		  MOV A, R1
+		  MUL AB ;  Multiplying R1 by 16 is equal to shifting R1 4bits leftward 
+		  MOV R2, A ; Shifted value of R1 is placed in address register
+	    SUB_STATUS_2: CJNE R0, #004H, SUB_STATUS_3
+		  NEXT_LOCATION: CJNE R1, #050H, PREV_LOCATION
+			MOV A, R2
+			ADD A, #001H ; Increase address register
+			MOV R2, A
+			JMP STATUS4 ; Go to situation that user should enter data
+		  PREV_LOCATION:
+			DEC R2 ; Decrease address register
+			JMP STATUS4 ; Go to situation that user should enter data
+	    SUB_STATUS_3: CJNE R0, #007H, STATUS8
+		  JMP STATUS7
+	 STATUS8: CJNE R0, #003H, STATUS8; Stay in status 6 until user enter number
+	       MOV A, R1
+	       ADD A, R2 ; Data is complete
+	       MOV R2, A
+	       JMP STATUS3 ; Go to situation that user should enter EXE
+	    
+JMP MAIN
+
