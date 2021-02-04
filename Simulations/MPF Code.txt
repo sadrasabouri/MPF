@@ -1,3 +1,4 @@
+
 ORG 0000H
 JMP MAIN
 
@@ -107,14 +108,14 @@ SITUATION7: CJNE R0, #007H, SITUATION8 ; Situation 7 = wait for user to enter hi
 			RETI
 		UP: CJNE R1, #050H, DOWN ;  Check the previous address if it is not next
 			
-			MOV R0, #004H ; Move to status 3
+			MOV R0, #004H ; Move to status 4
 			SETB EA ; Enable interrupt individually
 			SETB EX0 ; Enable external interrupt0
 			SETB P3.1 ; Enable interrupt
 			RETI
 		DOWN: CJNE R1, #070H, DOWN ;  Other keys are wrong if it is not next
 			
-			MOV R0, #004H ; Move to status 3
+			MOV R0, #004H ; Move to status 4
 			SETB EA ; Enable interrupt individually
 			SETB EX0 ; Enable external interrupt0
 			SETB P3.1 ; Enable interrupt
@@ -439,3 +440,9 @@ MAIN:
 	    
 JMP MAIN
 
+
+
+
+
+;====================================================================
+      END
