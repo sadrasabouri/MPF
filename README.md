@@ -54,7 +54,7 @@ Fallowing Registors are specific registors on code:
 
 <img src="https://github.com/sadrasabouri/MPF/blob/main/Others/Working_FSM.png">
 
-`R0` Registor might get some values which is described case by case in fallowing table:
+`R0` Registor - which is filled by situation index - might get some values which is described case by case in fallowing table:
 
 | Value | Situation |
 |:-------:|:-------:|
@@ -67,3 +67,26 @@ Fallowing Registors are specific registors on code:
 | `06H` | Data is sent to choosen memory address and user must click on `EXE` |
 | `07H` | Wait for user to enter higher part of the next address |
 | `08H` | Wait for user to enter lower part of the next address |
+
+
+`R1` Registor - which is filled by inputted key value - might get some values which is described case by case in fallowing table:
+
+| Value | Corresponding Key |
+|:-------:|:-------:|
+| `00H` - `0FH` | `0` to `F` keys on keypad |
+| `10H` | `PC` |
+| `20H` | `F1` |
+| `30H` | `ADR` |
+| `40H` | `F2` |
+| `50H` | `+` |
+| `60H` | `F3` |
+| `70H` | `-` |
+| `80H` | `F4` |
+| `90H` | `DATA` |
+| `A0H` | `F5` |
+| `B0H` | `MOD` |
+| `C0H` | `F6` |
+| `D0H` | `EXE` |
+| `E0H` | `F7` |
+| `F0H` | `END` |
+| `F1H` | `F8` |
