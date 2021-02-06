@@ -13,3 +13,31 @@ Main challeng is the fact that executing these instructions is normally done ins
 * **Mohammad Qumi** [Mohammad Qumi](https://github.com/Mohammad-Qumi)
 * **Sadra Sabouri** [Sadra Sabouri](https://github.com/sadrasabouri)
 * **Mohammad Sina Hassan Nia** [Mohammad Sina Hassan Nia](https://github.com/sinahsnn)
+
+##  How to Use
+
+Fallowing steps may be taken for starting simulation the desired code:
+
+1.  Press `PC` key. (Any other key will be ignored)
+
+2.  Enter two Hex number dedicating RAM address, after this step RAM address will be shown on 7-segments for a while. (Any other key except keys from `0` - `F` will be igonred)
+
+3.  Press `EXE` key. (Any other key will be igonred)
+
+4.  Enter two Hex number dedicating OpCode of instruction, after this data will be shown on 7-segments for a while. (Any other key except keys from `0` - `F` will be igonred)
+
+5.  Press `EXE` key. (Any other key will be igonred)
+
+6.  For selecting next home of RAM you can easily press:
++   `+` for going forward on RAM
++   `-` for coming backward on RAM
+After this situation you don't have to press `EXE` again, just input your desired data and then press `EXE`. You can end this process anytime you want by simply pressing `END` key.
+You should put an `00` at the end of your code which makes it easier for simulator to find where should it stop.
+
+7.  After pressing `END` a number will be shown on 7-segment which is the result of calculations, it'll show `88` if there is somthing wrong with at least a OpCode.
+
+<b> After this process whole system may need a reset </b>
+
+## Technical Detail
+
+
