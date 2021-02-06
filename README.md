@@ -53,3 +53,17 @@ Fallowing Registors are specific registors on code:
 | R3 | Data Buffer (Containing last inputted address to be saved on RAM)
 
 <img src="https://github.com/sadrasabouri/MPF/blob/main/Others/Working_FSM.png">
+
+`R0` Registor might get some values which is described case by case in fallowing table:
+
+| Value | Situation |
+|:-------:|:-------:|
+| `00H` | Wait for user to push `PC` |
+| `01H` | Wait for user to enter higher part of start address |
+| `02H` | Wait for user to enter lower part of start address |
+| `03H` | The address is entered and the user should enter `EXE` |
+| `04H` | Address is sent to controller and now it's time to enter higher part of data which you want to send to that memory address |
+| `05H` | Address is sent to controller and now it's time to enter Lower part of data which you want to send to that memory address |
+| `06H` | Data is sent to choosen memory address and user must click on `EXE` |
+| `07H` | Wait for user to enter higher part of the next address |
+| `08H` | Wait for user to enter lower part of the next address |
