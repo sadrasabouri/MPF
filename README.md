@@ -16,7 +16,7 @@ Main challeng is the fact that executing these instructions is normally done ins
 
 ##  How to Use
 
-Fallowing steps may be taken for starting simulation the desired code:
+Fallowing steps may be needed for starting a simulation on the desired code:
 
 1.  Press `PC` key. (Any other key will be ignored)
 
@@ -31,6 +31,7 @@ Fallowing steps may be taken for starting simulation the desired code:
 6.  For selecting next home of RAM you can easily press:
 +   `+` for going forward on RAM
 +   `-` for coming backward on RAM
+
 After this situation you don't have to press `EXE` again, just input your desired data and then press `EXE`. You can end this process anytime you want by simply pressing `END` key.
 You should put an `00` at the end of your code which makes it easier for simulator to find where should it stop.
 
