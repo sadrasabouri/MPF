@@ -90,3 +90,25 @@ Fallowing Registors are specific registors on code:
 | `E0H` | `F7` |
 | `F0H` | `END` |
 | `F1H` | `F8` |
+
+## Supported Instructions
+
+Fallowing 8051 instrucrions are now guaranteed to be worked well:
+ 
++   `MOV`
+
++   `CALL`
+
++   `AJUMP`
+
++   `RET`
+
++   `ADD`
+
++   `ADDC`
+
++   `SUB`
+
++   `INC`
+
++   `DEC`
