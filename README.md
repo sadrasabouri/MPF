@@ -41,4 +41,15 @@ You should put an `00` at the end of your code which makes it easier for simulat
 
 ## Technical Detail
 
+For saving states and assigning a transition function between them corresponding to each input key, we can have a DFA(FSM - Finite State Machine) which describes these transitions.
 
+Fallowing Registors are specific registors on code:
+
+| Registor | Use |
+|:-------:|:-------:|
+| R0 | State index (Values in circles in fallowing FSM) |
+| R1 | Inputted key value (Values on edges in fallowing FSM) |
+| R2 | Address Buffer (Containing last inputted address of RAM) |
+| R3 | Data Buffer (Containing last inputted address to be saved on RAM)
+
+<img src="https://github.com/sadrasabouri/MPF/blob/main/Others/Working_FSM.png">
